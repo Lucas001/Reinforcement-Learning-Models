@@ -62,7 +62,7 @@ class Draw(Thread):
 class Physics(Thread):
     def __init__(self,outPygame, outEv, outBodyList):
         Thread.__init__(self)
-        self.pygame_box2d_ratio=10.0
+        self.pygame_box2d_ratio=20.0
         self.world = b2World(gravity=(0,0), doSleep=True)
         self.timeStep = 1.0 / 300
         self.vel_iters = 3
@@ -81,7 +81,7 @@ class Physics(Thread):
         return body
 
     def physicsLoop(self):
-        if random.randint(1,100)==2:
+        if random.randint(1,1000)==2:
             self.bodylist.append(self.create_dynamic_car(0,random.randint(1,400),random.randint(1,10)))
             self.bodylist.append(self.create_dynamic_car(500,random.randint(1,400),-(random.randint(1,10))))
 
@@ -100,7 +100,7 @@ class Physics(Thread):
 bodylist=[]
  
 pygame.init()
-pygame.display.set_caption('Car impacts')
+pygame.display.set_caption('Box impacts')
 ev = pygame.event.poll()
 
 thread1 = Draw(pygame,ev,bodylist)
