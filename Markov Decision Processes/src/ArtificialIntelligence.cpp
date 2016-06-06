@@ -10,6 +10,7 @@ ArtificialIntelligence::ArtificialIntelligence(){
 	impartialState = -15;
 	maxReward = 20;
 	minReward = -5;
+	countQ = 0;
 }
 
 void ArtificialIntelligence::searchAgentSetPositions(){
@@ -103,6 +104,7 @@ bool ArtificialIntelligence::calculateMDPStates(){
 	}
 
 	showBestResult();
+	//countQ = 0;
 
 	generationsRL++;
 	return reachOptimalState;
@@ -174,6 +176,7 @@ float ArtificialIntelligence::calculateActualState(float top,float bottom, float
 
 float ArtificialIntelligence::calculateQValue(float front, float left, float right){
 	float qValue = (accuracy*(discount*front+actReward) + noise*(discount*left+actReward) + noise*(discount*right + actReward));
+	countQ++;
 	return qValue;
 }
 

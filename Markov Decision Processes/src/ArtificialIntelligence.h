@@ -10,6 +10,8 @@ private:
     int gameDepth;
     int gameWidth;
 
+    int countQ;
+
     Map map;
     int generationsRL;
 
