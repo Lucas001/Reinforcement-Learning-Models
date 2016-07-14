@@ -25,20 +25,9 @@ void Simulator::runSimulator(int argc, char *argv[], ModelStrategy *stratBlueTea
 		exit(1);
 	}
 
-	physics = new Physics(numTeams);
+	initWorld();
 	HandleGraphics::initGraphics(physics,strategies,argc,argv);
-
-    vector<RobotPhysics*> gRobots = physics->getAllRobots();
-
-    for(int i = 0; i < physics->getNumTeams();i++){
-        vector<RobotStrategy*> robotStrategiesTeam;
-        for(int j = 0; j < numRobotsTeam;j++){
-            RobotStrategy* robotStrategy = new RobotStrategy(0);
-            robotStrategiesTeam.push_back(robotStrategy);
-        }
-        gameState->robotStrategiesTeam = robotStrategiesTeam;
-        gameState->robotStrategiesAdv = robotStrategiesTeam;
-    }
+    
 
     pthread_t thread[3];
 	pthread_create(&(thread[0]), NULL, &Simulator::runPhysics_thread, this);
@@ -48,6 +37,22 @@ void Simulator::runSimulator(int argc, char *argv[], ModelStrategy *stratBlueTea
     pthread_join(thread[0], NULL);
     pthread_join(thread[1], NULL);
     pthread_join(thread[2], NULL);
+}
+
+void Simulator::initWorld(){
+    Physics *physicsTemp = new Physics(strategies.size());
+    for(int i = 0; i < physicsTemp->getNumTeams();i++){
+        vector<RobotStrategy*> robotStrategiesTeam;
+        for(int j = 0; j < numRobotsTeam;j++){
+            RobotStrategy* robotStrategy = new RobotStrategy(j);
+            robotStrategiesTeam.push_back(robotStrategy);
+        }
+        gameState->robotStrategiesTeam = robotStrategiesTeam;
+        gameState->robotStrategiesAdv = robotStrategiesTeam;
+    }
+    
+
+    this->physics = physicsTemp;
 }
 
 void* Simulator::runGraphics(){
@@ -63,8 +68,17 @@ void* Simulator::runPhysics(){
 
     while(!HandleGraphics::getScenario()->getQuitStatus()){
         usleep(1000000.f*timeStep/handTime);
+        
+        if(physics->isRefreshingWorld()){
+            initWorld();
+            
+            HandleGraphics::getScenario()->updatePhysics(physics);
 
-        if(HandleGraphics::getScenario()->getSingleStep() && gameState->sameState ){
+            for(int i = 0; i < strategies.size(); i ++){
+                strategies[i]->reinitStrategy();
+            }
+        }
+        else if(HandleGraphics::getScenario()->getSingleStep() && gameState->sameState){
             cout << endl << endl << endl;
             loopBullet++;
             cout << "--------Ciclo Atual:\t" << loopBullet << "--------" << endl;

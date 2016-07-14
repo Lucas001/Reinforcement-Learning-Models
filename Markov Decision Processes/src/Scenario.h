@@ -89,7 +89,7 @@ public:
 
 	void setSingleStep(bool singleStep);
 
-	void updatePhysics(vector<ModelStrategy*> strategies);
+	void updatePhysics(Physics* physics);
 };
 
 class HandleGraphics{

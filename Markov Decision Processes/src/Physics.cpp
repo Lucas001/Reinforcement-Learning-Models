@@ -2,6 +2,7 @@
 
 Physics::Physics(int numTeams){
     this->numTeams = numTeams;
+    cout << "111111111" << endl;
     this->numRobotsTeam = NUM_ROBOTS_TEAM;
 
 	collisionConfig = new btDefaultCollisionConfiguration();
@@ -11,13 +12,18 @@ Physics::Physics(int numTeams){
     world = new btDiscreteDynamicsWorld(dispatcher,broadphase,solver,collisionConfig);
     world->setGravity(btVector3(0,-9.81*SCALE_WORLD,0));
 
+    cout << "2222222222" << endl;
+
     glDebugDrawer = new GLDebugDrawer();
     world->setDebugDrawer(glDebugDrawer);
     gContactAddedCallback = callBackHitFunc;
+
+    cout << "3333333333" << endl;
     
     createWorld();
 
     registBodies();
+    refreshingWorld = false;
 }
 
 Physics::~Physics(){
@@ -31,6 +37,14 @@ Physics::~Physics(){
 }
 
 void Physics::deleteWorldObj(){
+    int i;
+    for (i=world->getNumCollisionObjects()-1; i>=0 ;i--)
+    {
+        btCollisionObject* obj = world->getCollisionObjectArray()[i];
+        world->removeCollisionObject( obj );
+        delete obj;
+    }
+    
     for(int i = 0; i<bodies.size();i++){
         delete bodies[i];
     }
@@ -41,6 +55,7 @@ void Physics::deleteWorldObj(){
 }
 
 void Physics::registBodies(){
+    
     addFloor();
 
     btVector3 posTeam1[] = {btVector3(15,4,SIZE_DEPTH- 55),btVector3(35,4,30),btVector3(55,4,45)};
@@ -50,7 +65,7 @@ void Physics::registBodies(){
     for(int i = 0;i < gameDepth;i++){
         for(int j = 0;j < gameWidth;j++){
             if(map.at(i).at(j) == 1){
-                addRobot(Color(0.3,0.3,0.3),btVector3(i*SCALE_MAP+SCALE_MAP/2,7.5,j*SCALE_MAP+SCALE_MAP/5),btVector3(0,90,0),8,0.25,clrPlayers[i],clrTeams[0]);
+                addRobot(Color(0.3,0.3,0.3),btVector3(i*SCALE_MAP+SCALE_MAP/2,4,j*SCALE_MAP+SCALE_MAP/5),btVector3(0,90,0),8,0.25,clrPlayers[i],clrTeams[0]);
             }
             if(map.at(i).at(j) == 5){
                 addWall(Color(0,0,0),btVector3(i*SCALE_MAP+SCALE_MAP/2,2.5,j*SCALE_MAP+SCALE_MAP/2),7,5,7,0);
@@ -68,7 +83,22 @@ void Physics::registBodies(){
 }
 
 void Physics::stepSimulation(float timeW,float subStep, float timeStep){
-    world-> stepSimulation(timeW, subStep, timeStep);
+    if(!verifyWorld())
+        world-> stepSimulation(timeW, subStep, timeStep);
+}
+
+bool Physics::verifyWorld(){
+    for(int i=0;i<bodies.size();i++){
+		if(bodies[i]->name.compare("ball") == 0){
+            BulletObject* blObj = (BulletObject*)bodies[i]->body->getUserPointer();
+            if(blObj->hit){
+                refreshingWorld = true;
+                return true;
+            }
+			break;
+		}
+	}
+    return false;
 }
 
 bool Physics::callBackHitFunc(btManifoldPoint& cp,const btCollisionObjectWrapper* obj1,int id1,int index1,const btCollisionObjectWrapper* obj2,int id2,int index2){
@@ -80,8 +110,9 @@ bool Physics::callBackHitFunc(btManifoldPoint& cp,const btCollisionObjectWrapper
         BulletObject* btObj = (BulletObject*)wrappers[i]->getCollisionObject()->getUserPointer();
 
         string name = btObj->name;
-        if (!name.compare(0, prefix.size(), prefix) || name == "ball")
+        if (!name.compare(0, prefix.size(), prefix) || name == "ball"){
             btObj->hit = true;
+        }
     }
 
     return false;
@@ -244,8 +275,9 @@ void Physics::createWorld(){
     gameWidth = SIZE_WIDTH/SCALE_MAP;
     gameDepth = SIZE_DEPTH/SCALE_MAP;
 
-    int numObstacles = gameWidth*gameDepth/5; 
+    int numObstacles = gameWidth*gameDepth/6; 
     srand(time(NULL));
+    map.clear();
     for(int i = 0; i < gameDepth;i++){
         vector<float> temp;
         for(int j = 0; j < gameWidth;j++){
@@ -254,14 +286,6 @@ void Physics::createWorld(){
         map.push_back(temp);
     }
 
-    /*cout << map.size() << endl;
-    for(int i= 0; i < gameDepth;i++){
-        for(int j= 0; j < gameWidth;j++){
-            if(map.at(i).at(j) != 0)
-                cout << map.at(i).at(j) << " ";
-        }   
-        cout << endl;
-    }*/
     for(int i = 0; i < numObstacles;i++){
         int coordX = 0;
         int coordY = 0;
@@ -270,11 +294,11 @@ void Physics::createWorld(){
            coordX = rand()%(gameWidth);
            usleep(1.f/60.f);
            coordY = rand()%(gameDepth); 
-          // cout << coordX << "\t" << coordY << endl;
         }while(!validObstacle(coordX,coordY));
 
         map.at(coordY).at(coordX) = 5;
     }
+
     for(int i = 0; i < gameWidth;i++){
         if(map.at(0).at(i) != 5){
             map.at(0).at(i) = 1;

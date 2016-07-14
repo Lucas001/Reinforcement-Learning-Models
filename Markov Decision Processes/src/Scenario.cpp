@@ -83,8 +83,11 @@ Scenario::~Scenario(){
 
 }
 
-void Scenario::updatePhysics(vector<ModelStrategy*> strategies){
-    this->strategies = strategies;
+void Scenario::updatePhysics(Physics* physics){
+	this->gRobots = physics->getAllRobots();
+    this->gBodies = physics->getAllBtObj();
+	this->physics = physics;
+	cout << "entrooo aeee" << endl;
 }
 
 void Scenario::initLight(){
@@ -149,12 +152,12 @@ void Scenario::displayEvent(){
 	timeStep = (float)(timeNow - timeLastLoop)/1000.;
 	timeLastLoop = timeNow;
     //drawRobotTarget();
-	renderRobotDebugPoints();
-    physics->startDebug();
+	if(!physics->isRefreshingWorld()){
+		renderRobotDebugPoints();
+		physics->startDebug();
 
-
-
-    if(debugMode == 0)drawPhysicObjects();
+		if(debugMode == 0)drawPhysicObjects();
+	}
 
 	glutSwapBuffers();
 }
@@ -310,17 +313,17 @@ void Scenario::renderRobotDebugPoints(){
     			vector<DrawComponents> drawComp = strategies[i]->getDrawComponents();
                 //btVector3 unitTarget = targetPos - robotPos;
                 for(int w = 0; w < drawComp.size(); w++){
-                	vector<btVector3> listPoints = drawComp.at(w).drawPoints;
+					vector<btVector3> listPoints = drawComp.at(w).drawPoints;
 
-                	Color clrs[] = {drawComp.at(w).color,drawComp.at(w).color,drawComp.at(w).color};
-	                material(clrs);
-	                glPushMatrix();
-	                    glBegin(GL_QUADS);
-                        for(int k = 0; k < listPoints.size(); k ++){
-                        	glVertex3f(listPoints.at(k).getX(),listPoints.at(k).getY(),listPoints.at(k).getZ());
-                        }
-	                    glEnd();
-	                glPopMatrix();
+					Color clrs[] = {drawComp.at(w).color,drawComp.at(w).color,drawComp.at(w).color};
+					material(clrs);
+					glPushMatrix();
+						glBegin(GL_QUADS);
+						for(int k = 0; k < listPoints.size(); k ++){
+							glVertex3f(listPoints.at(k).getX(),listPoints.at(k).getY(),listPoints.at(k).getZ());
+						}
+						glEnd();
+					glPopMatrix();
                 } 
     		}
         }

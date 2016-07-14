@@ -55,13 +55,20 @@ void Strategy::runStrategy(vector<RobotStrategy*> robotStrategiesTeam,vector<Rob
     updateStrategiesHistory();
 }
 
+void Strategy::reinitStrategy(){
+    runningRL = false;
+    reachDeepState = false;
+    reachingPoint = false;
+    artInt = new ArtificialIntelligence();
+    drawComponents.clear();
+}
+
 void Strategy::updateStrategiesHistory(){
     strategyHistory.clear();
     strategyHistory.push_back(this);
 }
 
 void Strategy::printMDPState(){
-    drawComponents.clear();
     Map map = artInt->getMdp();
     float maxReward = artInt->getMaxReward();
     float impartState = artInt->getImpartialState();

@@ -17,7 +17,7 @@ class Simulator{
 
 private:
     const float timeStep = 1.f/60.f;
-    const float handTime = 1.f;
+    const float handTime = 10.f;
     int numRobotsTeam;
     bool runningPhysics;
 
@@ -33,6 +33,8 @@ private:
 	btVector3 calcRelativePosition(btVector3 absPos, int attackDir);
 	void calcRelativeWorld(vector<RobotStrategy*> robotStrategiesTeam, int attackDir);
 	RobotStrategy* updateLocalPhysics(int id, RobotPhysics* bdRobot);
+
+    void initWorld();
 public:
 	Simulator();
 	void runSimulator(int argc, char *argv[], ModelStrategy* strategyTeam, ModelStrategy* strategyAdv, ArtificialIntelligence* artInt);

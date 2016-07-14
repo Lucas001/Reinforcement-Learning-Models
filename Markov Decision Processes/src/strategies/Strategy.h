@@ -41,6 +41,8 @@ public:
 	Strategy();
 	~Strategy();
 
+	void reinitStrategy();
+
 	void runStrategy(vector<RobotStrategy*> robotStrategiesTeam,vector<RobotStrategy*> robotStrategiesAdv,btVector3 ballPos, Map map);
 };
 

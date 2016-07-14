@@ -46,6 +46,8 @@ public:
     ModelStrategy();
     void runStrategy();
 	virtual void runStrategy(vector<RobotStrategy*> robotStrategiesTeam, vector<RobotStrategy*> robotStrategiesAdv, btVector3 targetPos,Map map) = 0;
+	virtual void reinitStrategy() {}
+	
 	virtual void setAttackDir(int goalpostDir);
 	int getAttackDir(){ return attackDir; }
     virtual void setFramesSec(int frames);

@@ -17,6 +17,8 @@ private:
     int gameWidth;
     int gameDepth;
 
+	bool refreshingWorld;
+
 	btDynamicsWorld* world;
 	btDispatcher* dispatcher;
 	btCollisionConfiguration* collisionConfig;
@@ -35,6 +37,7 @@ private:
     
     void createWorld();
     bool validObstacle(int coordX, int coordY);
+	bool verifyWorld();
 public:
 	Physics(int numTeams);
 	~Physics();
@@ -57,6 +60,8 @@ public:
 	vector<BulletObject*> getAllBtObj() { return bodies; }
 	vector<RobotPhysics*> getAllRobots() { return genRobots; }
 	Map getMap(){ return map; }
+
+	bool isRefreshingWorld() { return refreshingWorld; }
 };
 
 #endif
