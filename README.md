@@ -1,4 +1,4 @@
-# RL-Path-Planning
+# Reinforcement Learning Examples
 
 The main goal of this project is provide an examples of Q-Value and Q-learning, which are Reinforcement Learning algorithms. 
 
