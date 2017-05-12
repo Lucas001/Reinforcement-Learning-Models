@@ -1,0 +1,10 @@
+*.png
+*~
+*.gz
+*Backup*
+*backup*
+*.mat
+
+*Results*
+*results*
+*ckpt*
