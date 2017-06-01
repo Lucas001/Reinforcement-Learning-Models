@@ -6,7 +6,7 @@ The first is done through a path planning experiment, where the robot have to re
 
 ![Basic MDP - Path Planning](https://cloud.githubusercontent.com/assets/12956069/15630585/6561a0fa-2518-11e6-9b4e-58442606ea9c.jpg)
 
-And the Q-learning algorithm learns a policy of a basic crawler:
+And the Q-learning algorithm learns a policy of a basic crawler, created with Pybox2D:
 
 ![Basic MDP - Path Planning](https://github.com/lucasbsimao/RL-Basics/blob/master/Q-Learning/RL-1.png)
 
